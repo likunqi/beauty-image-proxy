@@ -1,0 +1,9 @@
+ name = "beauty-image-proxy"
+ compatibility_date = "2025-04-01"
+ compatibility_flags = ["nodejs_compat"]
+ main = "src/index.js"
+ 
+ [vars]
+ API_VERSION = "v1"
+ 
+ [env.production]
