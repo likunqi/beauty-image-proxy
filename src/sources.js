@@ -16,7 +16,7 @@
    {
      name: 'vmy',
      label: '缁存ⅵ闅忔満缇庡コ',
-     description: '鏉ヨ嚜鐖卞绾?蹇呭簲锛屽骞磋繍钀?,
+     description: '鏉ヨ嚜鐖卞绾?蹇呭簲锛屽骞磋繍钀',
      type: 'json',
      url: 'https://api.52vmy.cn/api/img/tu/girl',
      extract: (d) => d?.url || d?.data?.url,
@@ -24,8 +24,8 @@
    },
    {
      name: 'mtyqx',
-     label: '闅忔満濡瑰瓙鍥?,
-     description: '鑰佺墝鎺ュ彛锛岀洿鎺ヨ繑鍥炲浘鐗?,
+     label: '闅忔満濡瑰瓙鍥',
+     description: '鑰佺墝鎺ュ彛锛岀洿鎺ヨ繑鍥炲浘鐗',
      type: 'image',
      url: 'http://api.mtyqx.cn/api/random.php',
      category: 'realistic',
@@ -40,8 +40,8 @@
    },
    {
      name: 'lofter',
-     label: 'Lofter 闅忔満鍥?,
-     description: '鏀寔 JSON 鍜岃烦杞袱绉嶆ā寮?,
+     label: 'Lofter 闅忔満鍥',
+     description: '鏀寔 JSON 鍜岃烦杞袱绉嶆ā寮',
      type: 'json',
      url: 'https://api.ooopn.com/image/lofter/api.php?type=json',
      extract: (d) => d?.data?.url || d?.url || d?.imgurl,
@@ -50,7 +50,7 @@
    {
      name: 'yviii-suiji',
      label: 'YVIII 闅忔満缇庡浘',
-     description: 'HTTPS + CDN锛岀珫灞忛殢鏈?,
+     description: 'HTTPS + CDN锛岀珫灞忛殢鏈',
      type: 'image',
      url: 'https://api.yviii.com/img/suiji',
      category: 'realistic',
@@ -58,7 +58,7 @@
    {
      name: 'yviii-meitu',
      label: 'YVIII 4K缇庡コ',
-     description: 'YVIII 4K 楂樻竻缇庡コ鍥?,
+     description: 'YVIII 4K 楂樻竻缇庡コ鍥',
      type: 'image',
      url: 'https://api.yviii.com/img/meitu',
      category: 'realistic',
@@ -73,8 +73,8 @@
    },
    {
      name: 'suyanw',
-     label: 'Suyanw 缇庡コ鍥?,
-     description: '杩斿洖 JSON锛屽骞寸淮鎶?,
+     label: 'Suyanw 缇庡コ鍥',
+     description: '杩斿洖 JSON锛屽骞寸淮鎶',
      type: 'json',
      url: 'https://api.suyanw.cn/api/pcmv.php',
      extract: (d) => d?.url || d?.data?.url || d?.imgurl || d?.pcmv || d?.img,
@@ -92,7 +92,7 @@
    // ---- 浜屾鍏?ACG ----
    {
      name: 'nmb',
-     label: 'ACG 缇庡皯濂?,
+     label: 'ACG 缇庡皯濂',
      description: '浜屾鍏冨コ鎬ц鑹查殢鏈哄浘',
      type: 'image',
      url: 'https://api.nmb.show/1985acg.php',
@@ -117,15 +117,15 @@
    },
    {
      name: 'btstu',
-     label: '浜屾鍏冮殢鏈?,
-     description: '鎸囧畾 lx=dongman 鑾峰彇浜屾鍏?,
+     label: '浜屾鍏冮殢鏈',
+     description: '鎸囧畾 lx=dongman 鑾峰彇浜屾鍏',
      type: 'image',
      url: 'http://api.btstu.cn/sjbz/?lx=dongman',
      category: 'anime',
    },
    {
      name: 'yviii-ecy',
-     label: 'YVIII 浜屾鍏?,
+     label: 'YVIII 浜屾鍏',
      description: 'YVIII 浜屾鍏冮殢鏈哄浘',
      type: 'image',
      url: 'https://api.yviii.com/img/ecy',
