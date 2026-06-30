@@ -41,42 +41,6 @@ const SOURCES = [
     url: 'https://www.dmoe.cc/random.php',
     category: 'realistic',
   },
-
-  // ---- 二次元/ACG ----
-  {
-    name: 'nekos-life',
-    label: 'Nekos.life',
-    description: '经典二次元猫娘随机图，长期维护',
-    type: 'json',
-    url: 'https://nekos.life/api/v2/img/neko',
-    extract: (d) => d?.url,
-    category: 'anime',
-  },
-  {
-    name: 'nekos-best',
-    label: 'Nekos.best',
-    description: '二次元动漫角色随机图，高清画质',
-    type: 'json',
-    url: 'https://nekos.best/api/v2/neko',
-    extract: (d) => d?.results?.[0]?.url,
-    category: 'anime',
-  },
-  {
-    name: 'loliapi-acg',
-    label: 'LoliAPI ACG',
-    description: '二次元动漫壁纸，302 跳转直链',
-    type: 'redirect',
-    url: 'https://www.loliapi.com/acg/',
-    category: 'anime',
-  },
-  {
-    name: 'loliapi-pe',
-    label: 'LoliAPI PC',
-    description: '动漫 PC 壁纸，302 跳转直链',
-    type: 'redirect',
-    url: 'https://www.loliapi.com/acg/pe/',
-    category: 'anime',
-  },
 ];
 
 /**
