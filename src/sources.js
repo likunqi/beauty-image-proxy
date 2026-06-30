@@ -11,129 +11,70 @@ const SOURCES = [
   {
     name: 'xxapi',
     label: 'XXAPI Beauty',
-    description: 'Old-school random beauty image API, supports ?return=302 redirect',
+    description: '老牌随机美女图，支持 JSON 返回',
     type: 'json',
     url: 'https://v2.xxapi.cn/api/meinvpic',
     extract: (d) => d?.data || d?.url || d?.imgurl,
     category: 'realistic',
   },
   {
-    name: 'vmy',
-    label: 'Weimeng Random',
-    description: 'From ai-bz/bing, years of operation',
-    type: 'json',
-    url: 'https://api.52vmy.cn/api/img/tu/girl',
-    extract: (d) => d?.url || d?.data?.url,
+    name: 'pic-re',
+    label: 'Pic.re Random',
+    description: '通用随机图片，支持多种分类',
+    type: 'image',
+    url: 'https://pic.re/image',
     category: 'realistic',
   },
   {
     name: 'mtyqx',
     label: 'Random Girl',
-    description: 'Old-school API, returns image directly',
+    description: '老牌随机美女图接口，返回图片直链',
     type: 'image',
-    url: 'http://api.mtyqx.cn/api/random.php',
+    url: 'https://api.mtyqx.cn/api/random.php',
     category: 'realistic',
   },
   {
     name: 'dmoe',
     label: 'DMOE Random Girl',
-    description: 'Fresh style, returns image directly',
+    description: '小清新风格随机妹子图',
     type: 'image',
-    url: 'http://www.dmoe.cc/random.php',
-    category: 'realistic',
-  },
-  {
-    name: 'lofter',
-    label: 'Lofter Random',
-    description: 'Supports JSON and redirect modes',
-    type: 'json',
-    url: 'https://api.ooopn.com/image/lofter/api.php?type=json',
-    extract: (d) => d?.data?.url || d?.url || d?.imgurl,
-    category: 'realistic',
-  },
-  {
-    name: 'yviii-suiji',
-    label: 'YVIII Random',
-    description: 'HTTPS + CDN, portrait random',
-    type: 'image',
-    url: 'https://api.yviii.com/img/suiji',
-    category: 'realistic',
-  },
-  {
-    name: 'yviii-meitu',
-    label: 'YVIII 4K Beauty',
-    description: 'YVIII 4K HD beauty images',
-    type: 'image',
-    url: 'https://api.yviii.com/img/meitu',
-    category: 'realistic',
-  },
-  {
-    name: 'gezia',
-    label: 'Bizhi Proxy',
-    description: 'Portrait random girl image, 302 redirect',
-    type: 'redirect',
-    url: 'http://cn.gezia.top/api/mzt/?mom=302',
-    category: 'realistic',
-  },
-  {
-    name: 'suyanw',
-    label: 'Suyanw Beauty',
-    description: 'Returns JSON, years of maintenance',
-    type: 'json',
-    url: 'https://api.suyanw.cn/api/pcmv.php',
-    extract: (d) => d?.url || d?.data?.url || d?.imgurl || d?.pcmv || d?.img,
-    category: 'realistic',
-  },
-  {
-    name: 'gz-pages',
-    label: 'GZ-Pages PCMV',
-    description: 'PCMV image source proxy',
-    type: 'json',
-    url: 'https://gz-api.pages.dev/pcmv',
-    extract: (d) => d?.url || d?.data?.url || d?.imgurl,
+    url: 'https://www.dmoe.cc/random.php',
     category: 'realistic',
   },
 
   // ---- 二次元/ACG ----
   {
-    name: 'nmb',
-    label: 'ACG Beauty Girl',
-    description: 'Anime female character random image',
-    type: 'image',
-    url: 'https://api.nmb.show/1985acg.php',
-    category: 'anime',
-  },
-  {
-    name: 'eees',
-    label: 'Anime Girl',
-    description: 'Anime random image',
-    type: 'image',
-    url: 'https://tuapi.eees.cc/dongman.php',
-    category: 'anime',
-  },
-  {
-    name: 'dongmanxingkong',
-    label: 'Anime Starry Sky',
-    description: 'ACGMAN anime random, supports JSON',
+    name: 'nekos-life',
+    label: 'Nekos.life',
+    description: '经典二次元猫娘随机图，长期维护',
     type: 'json',
-    url: 'https://api.dongmanxingkong.com/suijitupian/acg/1080p/index.php?return=json',
-    extract: (d) => d?.imgurl || d?.url || d?.data?.imgurl,
+    url: 'https://nekos.life/api/v2/img/neko',
+    extract: (d) => d?.url,
     category: 'anime',
   },
   {
-    name: 'btstu',
-    label: 'Anime Random',
-    description: 'Specify lx=dongman for anime',
-    type: 'image',
-    url: 'http://api.btstu.cn/sjbz/?lx=dongman',
+    name: 'nekos-best',
+    label: 'Nekos.best',
+    description: '二次元动漫角色随机图，高清画质',
+    type: 'json',
+    url: 'https://nekos.best/api/v2/neko',
+    extract: (d) => d?.results?.[0]?.url,
     category: 'anime',
   },
   {
-    name: 'yviii-ecy',
-    label: 'YVIII Anime',
-    description: 'YVIII anime random image',
-    type: 'image',
-    url: 'https://api.yviii.com/img/ecy',
+    name: 'loliapi-acg',
+    label: 'LoliAPI ACG',
+    description: '二次元动漫壁纸，302 跳转直链',
+    type: 'redirect',
+    url: 'https://www.loliapi.com/acg/',
+    category: 'anime',
+  },
+  {
+    name: 'loliapi-pe',
+    label: 'LoliAPI PC',
+    description: '动漫 PC 壁纸，302 跳转直链',
+    type: 'redirect',
+    url: 'https://www.loliapi.com/acg/pe/',
     category: 'anime',
   },
 ];
@@ -156,7 +97,6 @@ async function fetchImageUrl(source) {
       try { data = JSON.parse(text); } catch { throw new Error('非 JSON 响应'); }
       const imgUrl = source.extract(data);
       if (!imgUrl) throw new Error('JSON 中未找到图片 URL');
-      // 确保 URL 是绝对地址
       const absoluteUrl = imgUrl.startsWith('http') ? imgUrl : new URL(imgUrl, source.url).href;
       return { url: absoluteUrl, source: source.name };
     }
@@ -167,7 +107,6 @@ async function fetchImageUrl(source) {
         redirect: 'manual',
         signal: controller.signal,
       });
-      // 先尝试 302
       if (resp.status >= 300 && resp.status < 400) {
         const location = resp.headers.get('Location');
         if (location) {
@@ -175,7 +114,6 @@ async function fetchImageUrl(source) {
           return { url: absoluteUrl, source: source.name };
         }
       }
-      // 降级：用 GET 请求
       const getResp = await fetch(source.url, { redirect: 'manual', signal: controller.signal });
       if (getResp.status >= 300 && getResp.status < 400) {
         const location = getResp.headers.get('Location');
@@ -187,7 +125,7 @@ async function fetchImageUrl(source) {
       throw new Error('未获取到跳转地址');
     }
 
-    // image 类型：直接返回图片地址（由 proxy 来获取）
+    // image 类型：直接返回图片地址（由客户端获取）
     return { url: source.url, source: source.name };
   } finally {
     clearTimeout(timeout);
