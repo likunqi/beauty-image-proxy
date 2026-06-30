@@ -97,10 +97,10 @@ export default {
         return json({ success: false, error: "route not found" }, 404);
       }
 
-      const catLabel = (cat) => (cat === "anime" ? "二次元" : "三次元/真人");
+      const catLabel = () => "三次元/真人";
       const groups = {};
       for (const s of SOURCES) {
-        const g = catLabel(s.category);
+        const g = catLabel();
         if (!groups[g]) groups[g] = [];
         groups[g].push(s);
       }
@@ -172,7 +172,6 @@ h3{font-size:16px;margin:16px 0 8px;color:#a1a1aa}
 <strong>接口列表：</strong><br>
 <code>GET /api/v1/random</code> — 随机一张图（JSON）<br>
 <code>GET /api/v1/random?redirect</code> — 随机一张图（302 跳转）<br>
-<code>GET /api/v1/random?category=anime</code> — 仅二次元<br>
 <code>GET /api/v1/image/:name</code> — 指定源 → <a href="/api/v1/image/vmy">/api/v1/image/vmy</a><br>
 <code>GET /api/v1/image/:name?redirect</code> — 指定源 302 跳转<br>
 <code>GET /api/v1/sources</code> — 列出所有源 → <a href="/api/v1/sources">查看</a>
@@ -180,12 +179,7 @@ h3{font-size:16px;margin:16px 0 8px;color:#a1a1aa}
 
 <div class="random-bar">
 <button onclick="randomPreview('all')">随机一张</button>
-<select id="category-select">
-<option value="all">全部</option>
-<option value="realistic">三次元/真人</option>
-<option value="anime">二次元</option>
-</select>
-<button onclick="randomPreview(document.getElementById('category-select').value)">按分类随机</button>
+<span id="current-category" style="color:#a1a1aa;font-size:13px">全部</span>
 </div>
 
 <div class="preview-box" id="preview-box">
@@ -219,7 +213,7 @@ const meta=document.getElementById('preview-meta');
 const url=category==='all'?'/api/v1/random':'/api/v1/random?category='+category;
 try{const r=await fetch(url);const d=await r.json();
 if(d.success){box.style.display='block';img.src=d.data.url;
-meta.textContent='来源: '+d.data.label+' | 分类: '+(d.data.category==='anime'?'二次元':'三次元/真人');
+meta.textContent='来源: '+d.data.label+' | 分类: '+(d.data.category==='realistic'?'三次元/真人':'其他');
 }else{meta.textContent='失败: '+d.error;}
 }catch(e){meta.textContent='错误: '+e.message;}}
 </script>
