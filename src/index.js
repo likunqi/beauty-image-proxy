@@ -508,15 +508,15 @@ meta.textContent='来源: '+d.data.label+' | 分类: '+(d.data.category==='reali
 
 async function uploadRandom(count){
 const box=document.getElementById("upload-results");
-box.style.display="block";box.innerHTML="<span style=\"color:#a1a1aa\">上传中...</span>";
+box.style.display="block";box.innerHTML='<span style="color:#a1a1aa">上传中...</span>';
 try{const r=await fetch("/api/v1/upload-random?count="+count);const d=await r.json();
-if(d.success){let html="<strong style=\"color:#4ade80\">上传成功 ("+d.count+"张)</strong><br><br>";
-d.data.forEach(function(item){html+="<div style=\"margin-bottom:10px;padding:10px;background:#27272a;border-radius:6px\">"+
-"<strong>"+item.label+"</strong><br>"+
-"<span style=\"font-size:12px;color:#60a5fa;word-break:break-all\">"+item.url+"</span><br>"+
-'<button onclick=\"navigator.clipboard.writeText('+String.fromCharCode(39)+item.url+String.fromCharCode(39)+')\" style=\"margin-top:4px;background:#3f3f46;color:#e4e4e7;border:1px solid #52525b;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px\">复制链接</button>'+
-"</div>";});box.innerHTML=html;}else{box.innerHTML="<span style=\"color:#f87171\">上传失败: "+d.error+"</span>";}
-}catch(e){box.innerHTML="<span style=\"color:#f87171\">错误: "+e.message+"</span>";}}
+if(d.success){let html='<strong style="color:#4ade80">上传成功 ('+d.count+'张)</strong><br><br>';
+d.data.forEach(function(item){html+='<div style="margin-bottom:10px;padding:10px;background:#27272a;border-radius:6px">'+
+'<strong>'+item.label+'</strong><br>'+
+'<span style="font-size:12px;color:#60a5fa;word-break:break-all">'+item.url+'</span><br>'+
+'<button onclick="navigator.clipboard.writeText('+"'"+'+item.url+"'"+')" style="margin-top:4px;background:#3f3f46;color:#e4e4e7;border:1px solid #52525b;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">复制链接</button>'+
+'</div>';});box.innerHTML=html;}else{box.innerHTML='<span style="color:#f87171">上传失败: '+d.error+'</span>';}
+}catch(e){box.innerHTML='<span style="color:#f87171">错误: '+e.message+'</span>';}}
 </script>
 
 </body>
