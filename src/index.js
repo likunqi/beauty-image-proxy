@@ -130,7 +130,7 @@ export default {
 
               const formData = new FormData();
               const ext = contentType.split("/").pop() || "jpg";
-              formData.append("image", new Blob([imgBytes], { type: contentType }), "upload." + ext);
+              formData.append("file", new Blob([imgBytes], { type: contentType }), "upload." + ext);
 
               const upCtl = new AbortController();
               const upTimer = setTimeout(() => upCtl.abort(), 15000);
