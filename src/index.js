@@ -514,8 +514,11 @@ if(d.success){let html='<strong style="color:#4ade80">上传成功 ('+d.count+'�
 d.data.forEach(function(item){html+='<div style="margin-bottom:10px;padding:10px;background:#27272a;border-radius:6px">'+
 '<strong>'+item.label+'</strong><br>'+
 '<span style="font-size:12px;color:#60a5fa;word-break:break-all">'+item.url+'</span><br>'+
-'<button onclick="navigator.clipboard.writeText('+"'"+'+item.url+"'"+')" style="margin-top:4px;background:#3f3f46;color:#e4e4e7;border:1px solid #52525b;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">复制链接</button>'+
-'</div>';});box.innerHTML=html;}else{box.innerHTML='<span style="color:#f87171">上传失败: '+d.error+'</span>';}
+'<button style="margin-top:4px;background:#3f3f46;color:#e4e4e7;border:1px solid #52525b;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px" data-copy="'+item.url+'">复制链接</button>'+
+'</div>';});
+box.innerHTML=html;
+Array.from(box.querySelectorAll("[data-copy]")).forEach(function(btn){btn.onclick=function(){navigator.clipboard.writeText(btn.getAttribute("data-copy"));};});
+}else{box.innerHTML='<span style="color:#f87171">上传失败: '+d.error+'</span>';}
 }catch(e){box.innerHTML='<span style="color:#f87171">错误: '+e.message+'</span>';}}
 </script>
 
