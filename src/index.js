@@ -95,6 +95,7 @@ export default {
           }
         }
 
+        
         if (route === "upload-random") {
           const count = Math.min(parseInt(query.get("count") || "3", 10) || 3, 10);
           const catFilter = query.get("category");
@@ -106,6 +107,7 @@ export default {
           const results = [];
           const attempted = new Set();
           let budget = Math.min(pool.length * 3, 30);
+          let lastError = "";
 
           while (results.length < count && budget-- > 0) {
             const src = pool[Math.floor(Math.random() * pool.length)];
@@ -113,27 +115,49 @@ export default {
             attempted.add(src.name);
             try {
               const imgResult = await fetchImageUrl(src);
-              const imgResp = await fetch(imgResult.url, { signal: AbortSignal.timeout(10000) });
-              if (!imgResp.ok) throw new Error("HTTP " + imgResp.status);
+
+              const dlCtl = new AbortController();
+              const dlTimer = setTimeout(() => dlCtl.abort(), 10000);
+              let imgResp;
+              try {
+                imgResp = await fetch(imgResult.url, { signal: dlCtl.signal });
+              } finally {
+                clearTimeout(dlTimer);
+              }
+              if (!imgResp.ok) throw new Error("download HTTP " + imgResp.status);
               const imgBytes = await imgResp.arrayBuffer();
               const contentType = imgResp.headers.get("Content-Type") || "image/jpeg";
 
               const formData = new FormData();
-              const blob = new Blob([imgBytes], { type: contentType });
               const ext = contentType.split("/").pop() || "jpg";
-              formData.append("image", blob, "upload." + ext);
+              formData.append("image", new Blob([imgBytes], { type: contentType }), "upload." + ext);
 
-              const uploadResp = await fetch("https://likunqi.top/upload", {
-                method: "POST",
-                body: formData,
-                signal: AbortSignal.timeout(15000),
-              });
-              const uploadData = await uploadResp.json();
+              const upCtl = new AbortController();
+              const upTimer = setTimeout(() => upCtl.abort(), 15000);
+              let uploadResp;
+              try {
+                uploadResp = await fetch("https://likunqi.top/upload", {
+                  method: "POST",
+                  body: formData,
+                  signal: upCtl.signal,
+                });
+              } finally {
+                clearTimeout(upTimer);
+              }
+
+              if (!uploadResp.ok) throw new Error("upload HTTP " + uploadResp.status);
+              const uploadText = await uploadResp.text();
+              let uploadData;
+              try {
+                uploadData = JSON.parse(uploadText);
+              } catch {
+                throw new Error("upload non-JSON: " + uploadText.slice(0, 100));
+              }
               const uploadedUrl = uploadData.src
                 ? (uploadData.src.startsWith("http") ? uploadData.src : "https://likunqi.top" + uploadData.src)
                 : uploadData.url;
 
-              if (!uploadedUrl) throw new Error("upload response missing url");
+              if (!uploadedUrl) throw new Error("upload response missing url, got: " + JSON.stringify(uploadData));
 
               results.push({
                 url: uploadedUrl,
@@ -142,15 +166,17 @@ export default {
                 originalUrl: imgResult.url,
               });
             } catch (e) {
-              // try next source silently
+              lastError = src.name + ": " + e.message;
             }
           }
 
           if (results.length === 0) {
-            return json({ success: false, error: "all sources failed" }, 502);
+            return json({ success: false, error: "all sources failed: " + lastError }, 502);
           }
 
           return json({ success: true, count: results.length, data: results });
+        }
+
         }
                 return json({ success: false, error: "route not found" }, 404);
       }
