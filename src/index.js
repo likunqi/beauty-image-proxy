@@ -153,9 +153,11 @@ export default {
               } catch {
                 throw new Error("upload non-JSON: " + uploadText.slice(0, 100));
               }
-              const uploadedUrl = uploadData.src
-                ? (uploadData.src.startsWith("http") ? uploadData.src : "https://likunqi.top" + uploadData.src)
-                : uploadData.url;
+              const item = Array.isArray(uploadData) ? uploadData[0] : uploadData;
+              if (!item || (!item.src && !item.url)) throw new Error("upload response missing url, got: " + JSON.stringify(uploadData));
+              const uploadedUrl = item.src
+                ? (item.src.startsWith("http") ? item.src : "https://likunqi.top" + item.src)
+                : item.url;
 
               if (!uploadedUrl) throw new Error("upload response missing url, got: " + JSON.stringify(uploadData));
 
