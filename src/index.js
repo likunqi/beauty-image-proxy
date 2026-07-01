@@ -1,4 +1,4 @@
-import { SOURCES, fetchImageUrl } from "./sources.js";
+﻿import { SOURCES, fetchImageUrl } from "./sources.js";
 
 export default {
   async fetch(request, env, ctx) {
@@ -94,10 +94,68 @@ export default {
             return json({ success: false, error: e.message }, 502);
           }
         }
-        return json({ success: false, error: "route not found" }, 404);
+
+        if (route === "upload-random") {
+          const count = Math.min(parseInt(query.get("count") || "3", 10) || 3, 10);
+          const catFilter = query.get("category");
+          const pool = catFilter
+            ? SOURCES.filter((s) => s.category === catFilter)
+            : SOURCES;
+          if (pool.length === 0) return json({ success: false, error: "no matching source" }, 404);
+
+          const results = [];
+          const attempted = new Set();
+          let budget = Math.min(pool.length * 3, 30);
+
+          while (results.length < count && budget-- > 0) {
+            const src = pool[Math.floor(Math.random() * pool.length)];
+            if (attempted.has(src.name)) continue;
+            attempted.add(src.name);
+            try {
+              const imgResult = await fetchImageUrl(src);
+              const imgResp = await fetch(imgResult.url, { signal: AbortSignal.timeout(10000) });
+              if (!imgResp.ok) throw new Error("HTTP " + imgResp.status);
+              const imgBytes = await imgResp.arrayBuffer();
+              const contentType = imgResp.headers.get("Content-Type") || "image/jpeg";
+
+              const formData = new FormData();
+              const blob = new Blob([imgBytes], { type: contentType });
+              const ext = contentType.split("/").pop() || "jpg";
+              formData.append("image", blob, "upload." + ext);
+
+              const uploadResp = await fetch("https://likunqi.top/upload", {
+                method: "POST",
+                body: formData,
+                signal: AbortSignal.timeout(15000),
+              });
+              const uploadData = await uploadResp.json();
+              const uploadedUrl = uploadData.src
+                ? (uploadData.src.startsWith("http") ? uploadData.src : "https://likunqi.top" + uploadData.src)
+                : uploadData.url;
+
+              if (!uploadedUrl) throw new Error("upload response missing url");
+
+              results.push({
+                url: uploadedUrl,
+                source: src.name,
+                label: src.label,
+                originalUrl: imgResult.url,
+              });
+            } catch (e) {
+              // try next source silently
+            }
+          }
+
+          if (results.length === 0) {
+            return json({ success: false, error: "all sources failed" }, 502);
+          }
+
+          return json({ success: true, count: results.length, data: results });
+        }
+                return json({ success: false, error: "route not found" }, 404);
       }
 
-      const catLabel = () => "三次元/真人";
+      const catLabel = () => "涓夋鍏?鐪熶汉";
       const groups = {};
       for (const s of SOURCES) {
         const g = catLabel();
@@ -117,8 +175,8 @@ export default {
                     `<div class="card-title">${s.label}</div>` +
                     `<div class="card-desc">${s.description || ""}</div>` +
                     `<div class="card-btns">` +
-                    `<button onclick="testSource('${s.name}')">测试</button>` +
-                    `<button onclick="copyUrl('${s.name}')">复制API地址</button>` +
+                    `<button onclick="testSource('${s.name}')">娴嬭瘯</button>` +
+                    `<button onclick="copyUrl('${s.name}')">澶嶅埗API鍦板潃</button>` +
                     `</div>` +
                     `<div class="card-result" id="result-${s.name}"></div>` +
                     `</div>`
@@ -133,7 +191,7 @@ export default {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>美女图 API 聚合代理</title>
+<title>缇庡コ鍥?API 鑱氬悎浠ｇ悊</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f13;color:#e4e4e7;padding:24px;max-width:1100px;margin:0 auto}
@@ -165,21 +223,22 @@ h3{font-size:16px;margin:16px 0 8px;color:#a1a1aa}
 </style>
 </head>
 <body>
-<h1>美女图 API 聚合代理</h1>
-<p class="subtitle">聚合 ${SOURCES.length} 个公开图源，一键部署到 Cloudflare Workers</p>
+<h1>缇庡コ鍥?API 鑱氬悎浠ｇ悊</h1>
+<p class="subtitle">鑱氬悎 ${SOURCES.length} 涓叕寮€鍥炬簮锛屼竴閿儴缃插埌 Cloudflare Workers</p>
 
 <div class="endpoints">
-<strong>接口列表：</strong><br>
-<code>GET /api/v1/random</code> — 随机一张图（JSON）<br>
-<code>GET /api/v1/random?redirect</code> — 随机一张图（302 跳转）<br>
-<code>GET /api/v1/image/:name</code> — 指定源 → <a href="/api/v1/image/vmy">/api/v1/image/vmy</a><br>
-<code>GET /api/v1/image/:name?redirect</code> — 指定源 302 跳转<br>
-<code>GET /api/v1/sources</code> — 列出所有源 → <a href="/api/v1/sources">查看</a>
+<strong>鎺ュ彛鍒楄〃锛?/strong><br>
+<code>GET /api/v1/random</code> 鈥?闅忔満涓€寮犲浘锛圝SON锛?br>
+<code>GET /api/v1/random?redirect</code> 鈥?闅忔満涓€寮犲浘锛?02 璺宠浆锛?br>
+<code>GET /api/v1/image/:name</code> 鈥?鎸囧畾婧?鈫?<a href="/api/v1/image/xxapi">/api/v1/image/xxapi</a><br>
+<code>GET /api/v1/image/:name?redirect</code> 鈥?鎸囧畾婧?302 璺宠浆<br>
+<code>GET /api/v1/upload-random</code> &rarr; 随机3张上传图床（可跟 ?count=N）<br>
+<code>GET /api/v1/sources</code> 鈥?鍒楀嚭鎵€鏈夋簮 鈫?<a href="/api/v1/sources">鏌ョ湅</a>
 </div>
 
 <div class="random-bar">
-<button onclick="randomPreview('all')">随机一张</button>
-<span id="current-category" style="color:#a1a1aa;font-size:13px">全部</span>
+<button onclick="randomPreview('all')">闅忔満涓€寮?/button>
+<span id="current-category" style="color:#a1a1aa;font-size:13px">鍏ㄩ儴</span>
 </div>
 
 <div class="preview-box" id="preview-box">
@@ -187,24 +246,30 @@ h3{font-size:16px;margin:16px 0 8px;color:#a1a1aa}
 <div class="meta" id="preview-meta"></div>
 </div>
 
-<h2 style="font-size:18px;margin:20px 0 8px">数据源</h2>
+<div class="random-bar">
+<button onclick="uploadRandom(3)" style="background:#7c3aed">上传3张到图床</button>
+<button onclick="uploadRandom(1)" style="background:#7c3aed">上传1张</button>
+<span style="color:#a1a1aa;font-size:13px">自动上传到 likunqi.top 图床</span>
+</div>
+<div id="upload-results" style="display:none;margin-bottom:20px;background:#1a1a24;border-radius:8px;padding:14px;border:1px solid #27272a"></div>
+<h2 style="font-size:18px;margin:20px 0 8px">鏁版嵁婧?/h2>
 ${sourceCards}
 
 <script>
 async function testSource(name){
 const el=document.getElementById('result-'+name);
-el.className='card-result';el.textContent='请求中...';
+el.className='card-result';el.textContent='璇锋眰涓?..';
 try{const r=await fetch('/api/v1/image/'+name);const d=await r.json();
 if(d.success){el.className='card-result success';
-el.innerHTML='<span>成功</span><br><img src=\"'+d.data.url+'\" loading=\"lazy\">';
-}else{el.className='card-result error';el.textContent='失败: '+d.error;}
-}catch(e){el.className='card-result error';el.textContent='错误: '+e.message;}}
+el.innerHTML='<span>鎴愬姛</span><br><img src=\"'+d.data.url+'\" loading=\"lazy\">';
+}else{el.className='card-result error';el.textContent='澶辫触: '+d.error;}
+}catch(e){el.className='card-result error';el.textContent='閿欒: '+e.message;}}
 
 function copyUrl(name){
 const url=window.location.origin+'/api/v1/image/'+name+'?redirect';
 navigator.clipboard.writeText(url).then(()=>{
 const el=document.getElementById('result-'+name);
-el.className='card-result success';el.textContent='已复制: '+url;});}
+el.className='card-result success';el.textContent='宸插鍒? '+url;});}
 
 async function randomPreview(category){
 const box=document.getElementById('preview-box');
@@ -213,9 +278,20 @@ const meta=document.getElementById('preview-meta');
 const url=category==='all'?'/api/v1/random':'/api/v1/random?category='+category;
 try{const r=await fetch(url);const d=await r.json();
 if(d.success){box.style.display='block';img.src=d.data.url;
-meta.textContent='来源: '+d.data.label+' | 分类: '+(d.data.category==='realistic'?'三次元/真人':'其他');
-}else{meta.textContent='失败: '+d.error;}
-}catch(e){meta.textContent='错误: '+e.message;}}
+meta.textContent='鏉ユ簮: '+d.data.label+' | 鍒嗙被: '+(d.data.category==='realistic'?'涓夋鍏?鐪熶汉':'鍏朵粬');
+}else{meta.textContent='澶辫触: '+d.error;}
+}catch(e){meta.textContent='閿欒: '+e.message;}}
+async function uploadRandom(count){
+const box=document.getElementById('upload-results');
+box.style.display='block';box.innerHTML='<span style="color:#a1a1aa">上传中...</span>';
+try{const r=await fetch('/api/v1/upload-random?count='+count);const d=await r.json();
+if(d.success){let html='<strong style="color:#4ade80">上传成功 ('+d.count+'张)</strong><br><br>';
+d.data.forEach(item=>{html+='<div style="margin-bottom:10px;padding:10px;background:#27272a;border-radius:6px">'+
+'<strong>'+item.label+'</strong><br>'+
+'<span style="font-size:12px;color:#60a5fa;word-break:break-all">'+item.url+'</span><br>'+
+'<button onclick="navigator.clipboard.writeText(\''+item.url+'\')" style="margin-top:4px;background:#3f3f46;color:#e4e4e7;border:1px solid #52525b;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">复制链接</button>'+
+'</div>';});box.innerHTML=html;}else{box.innerHTML='<span style="color:#f87171">上传失败: '+d.error+'</span>';}
+}catch(e){box.innerHTML='<span style="color:#f87171">错误: '+e.message+'</span>';}}
 </script>
 </body>
 </html>`;
@@ -224,10 +300,15 @@ meta.textContent='来源: '+d.data.label+' | 分类: '+(d.data.category==='reali
         headers: { "Content-Type": "text/html; charset=utf-8", ...corsHeaders },
       });
     } catch (e) {
-      return new Response(JSON.stringify({ success: false, error: "服务器内部错误: " + e.message }), {
+      return new Response(JSON.stringify({ success: false, error: "鏈嶅姟鍣ㄥ唴閮ㄩ敊璇? " + e.message }), {
         status: 500,
         headers: { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" },
       });
     }
   },
 };
+
+
+
+
+

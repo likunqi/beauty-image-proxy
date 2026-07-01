@@ -1,13 +1,14 @@
-/**
+﻿/**
  * 美女图 API 数据源定义
  * 每个源指定获取模式：
- *   - json:    请求返回 JSON，通过 extract 字段取出图片 URL
- *   - image:   直接返回图片二进制数据
- *   - redirect:请求返回 302 跳转，提取 Location 头
+ *   - json:     请求返回 JSON，通过 extract 字段取出图片 URL
+ *   - image:    直接返回图片二进制数据（由客户端获取）
+ *   - redirect: 请求返回 302 跳转，提取 Location 头
+ *
+ * 注意：部分 URI 自带末尾斜杠（如 yviii），因不带斜杠会返回 301 导致 HEAD 拿不到 Location
  */
 
 const SOURCES = [
-  // ---- 三次元/真人美女 ----
   {
     name: 'xxapi',
     label: 'XXAPI Beauty',
@@ -18,27 +19,44 @@ const SOURCES = [
     category: 'realistic',
   },
   {
-    name: 'pic-re',
-    label: 'Pic.re Random',
-    description: '通用随机图片，支持多种分类',
-    type: 'image',
-    url: 'https://pic.re/image',
+    name: 'vmy',
+    label: '52VMy Girl',
+    description: '随机美女图片，JSON 返回直链',
+    type: 'json',
+    url: 'https://api.52vmy.cn/api/img/tu/girl',
+    extract: (d) => d?.url,
     category: 'realistic',
   },
   {
-    name: 'mtyqx',
-    label: 'Random Girl',
-    description: '老牌随机美女图接口，返回图片直链',
-    type: 'image',
-    url: 'https://api.mtyqx.cn/api/random.php',
+    name: 'suiji',
+    label: '随机图片',
+    description: '随机图片接口',
+    type: 'redirect',
+    url: 'https://api.yviii.com/img/suiji/',
     category: 'realistic',
   },
   {
-    name: 'dmoe',
-    label: 'DMOE Random Girl',
-    description: '小清新风格随机妹子图',
-    type: 'image',
-    url: 'https://www.dmoe.cc/random.php',
+    name: 'meitu',
+    label: '美图',
+    description: '美女图片接口',
+    type: 'redirect',
+    url: 'https://api.yviii.com/img/meitu/',
+    category: 'realistic',
+  },
+  {
+    name: 'baisi',
+    label: '白丝',
+    description: '白丝图片',
+    type: 'redirect',
+    url: 'https://api.yviii.com/img/baisi/',
+    category: 'realistic',
+  },
+  {
+    name: 'heisi',
+    label: '黑丝',
+    description: '黑丝图片',
+    type: 'redirect',
+    url: 'https://api.yviii.com/img/heisi/',
     category: 'realistic',
   },
 ];
@@ -55,7 +73,7 @@ async function fetchImageUrl(source) {
   try {
     if (source.type === 'json') {
       const resp = await fetch(source.url, { signal: controller.signal });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      if (!resp.ok) throw new Error(HTTP );
       const text = await resp.text();
       let data;
       try { data = JSON.parse(text); } catch { throw new Error('非 JSON 响应'); }
