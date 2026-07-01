@@ -176,8 +176,6 @@ export default {
 
           return json({ success: true, count: results.length, data: results });
         }
-
-        }
                 return json({ success: false, error: "route not found" }, 404);
       }
 
